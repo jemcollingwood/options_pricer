@@ -1,6 +1,7 @@
 """tests.py - Tests and benchmarks for Monte Carlo estimators"""
 
 import numpy as np
+from tabulate import tabulate
 
 from main import black_scholes_call, naive_mc_call, control_var_mc_call
 
@@ -67,13 +68,17 @@ def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
 def benchmark_variance(N=1000, n_reps=30):
     """Benchmarks the variance of every method's estimator for the call price."""
     methods = [naive_mc_call, control_var_mc_call]
-    result = f"--- Variances (mean over {n_reps} reps)---\n"
+    rows = []
+    headers = ["Method", "Mean variance", "Std. error"]
 
     for method in methods:
         mean_var, se_var = benchmark_single_method_variance(N, method, n_reps)
-        result += f"{str(method.__name__)}: {mean_var:.5f} ± {se_var:.5f}\n"
+        rows.append([method.__name__, f"{mean_var:.5f}", f"{se_var:.5f}"])
 
-    print(result)
+    print("=" * 61)
+    print(f"VARIANCE (mean over {n_reps} reps)")
+    print(tabulate(rows, headers, tablefmt="simple"))
+    print("=" * 61)
 
 
 def benchmark_error(N=1000, n_reps=30):
@@ -82,16 +87,21 @@ def benchmark_error(N=1000, n_reps=30):
     Compares estimated value to true value, derived from Black-Scholes formula.
     """
     methods = [naive_mc_call, control_var_mc_call]
-    result = f"--- Errors (mean over {n_reps} reps) ---\nTrue price: {TRUE_PRICE:.5f}\n"
+    rows = []
+    headers = ["Method", "Mean error", "Std. error", "Mean price"]
 
     for method in methods:
         mean_price, mean_error, se_error = benchmark_single_method_error(N, method)
-        result += (f"{str(method.__name__)}: mean error {mean_error:.5f} ± {se_error:.5f} "
-                   f"(mean estimate {mean_price:.5f})\n")
-                
-    print(result)
+        rows.append([method.__name__, f"{mean_error:.5f}",
+                    f"{se_error:.5f}", f"{mean_price:.5f}"])
+
+    print("=" * 61)      
+    print(f"ERROR (mean over {n_reps} reps)")
+    print(tabulate(rows, headers, tablefmt="simple"))
+    print("=" * 61)
 
 
 if __name__ == "__main__":
-    benchmark_variance()
     benchmark_error()
+    print()
+    benchmark_variance()
