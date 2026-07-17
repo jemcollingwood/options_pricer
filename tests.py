@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from main import black_scholes_call, naive_mc_call
+from main import black_scholes_call, naive_mc_call, control_var_mc_call
 
 
 S0    = 100  # Current price of underlying asset in GBP
@@ -30,7 +30,7 @@ def benchmark_single_method_variance(N, method):
 # ===================================================================================
 def benchmark_variance(N=1000):
     """Benchmarks the variance of every method's estimator for the call price."""
-    methods = [naive_mc_call]
+    methods = [naive_mc_call, control_var_mc_call]
     result = "--- Variances ---\n"
 
     for method in methods:
