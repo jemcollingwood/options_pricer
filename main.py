@@ -18,6 +18,7 @@ def calculate_put_price(S_0, K, T, r, C):
     """Calculates the put price P of an option given it has call price C."""
     return C - S_0 + K * math.e ** (-r * T)
 
+
 # ===================================================================================
 # Black-Scholes formula
 # ===================================================================================
@@ -54,9 +55,3 @@ def call_naive_mc(S_0, K, T, r, sigma, num_paths):
     C = math.e ** (-r * T) * expected_payoff
 
     return C
-
-
-N = 10000
-
-print(f"European call price is: {call_black_scholes(S_0, K, T, r, sigma)}")
-print(f"Estimated European call price is: {call_naive_mc(S_0, K, T, r, sigma, N)}")
