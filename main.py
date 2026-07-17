@@ -60,7 +60,7 @@ def naive_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     ST = simulate_terminal_prices(S0, T, r, sigma, Z)
     payoffs = np.maximum(ST - K, 0)
     discounted = np.exp((-r * T)) * payoffs
-    C = discounted.mean()
+    C = np.mean(discounted)
 
     return C, payoffs
 
@@ -82,11 +82,10 @@ def control_var_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     cov = np.cov(discounted_payoffs, control, ddof=1)[0, 1]
     var_control = np.var(control, ddof=1)
     c = cov / var_control
-    print(c)
-    
+
     # Apply control variate
     adjusted_payoffs = discounted_payoffs - c * (control - control_mean)
 
-    C = adjusted_payoffs.mean()
+    C = np.mean(adjusted_payoffs)
     
     return C, adjusted_payoffs
