@@ -12,14 +12,20 @@ r     = 0.05 # Risk free interest rate
 sigma = 0.2  # Volatility of underlying asset
 
 
-def benchmark_variance(N, num_paths, method):
-    """Benchmarks a method's estimator variance for *N* trials, each trial using *num_paths* paths."""
+def benchmark_single_method_variance(N, num_estimators, method):
+    """Benchmarks a method's estimator variance for *num_estimators*, each estimator using *N* paths."""
     estimator_list = []
 
-    for _ in range(N):
-        estimator_list.append(method(S_0, K, T, r, sigma, num_paths))
+    for _ in range(num_estimators):
+        C = method(S_0, K, T, r, sigma, N)
+        estimator_list.append(C)
 
     return statistics.variance(estimator_list)
 
 
-print(benchmark_variance(1000, 1000, call_naive_mc))
+def benchmark_single_method_bias(method):
+    """Benchmarks a method's estimator bias compared to Black-Scholes formula."""
+    pass
+
+
+print(benchmark_single_method_variance(1000, 2000, call_naive_mc))

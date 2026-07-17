@@ -16,7 +16,9 @@ norm = statistics.NormalDist()
 # ===================================================================================
 def calculate_put_price(S_0, K, T, r, C):
     """Calculates the put price P of an option given it has call price C."""
-    return C - S_0 + K * math.e ** (-r * T)
+    P = C - S_0 + K * math.e ** (-r * T)
+
+    return P
 
 
 # ===================================================================================
@@ -34,23 +36,27 @@ def call_black_scholes(S_0, K, T, r, sigma):
 def put_black_scholes(S_0, K, T, r, sigma):
     """Calculates the European put price using the Black-Scholes formula."""
     C = call_black_scholes(S_0, K, T, r, sigma)
-    return calculate_put_price(S_0, K, T, r, C)
+    P = calculate_put_price(S_0, K, T, r, C)
+
+    return P
 
 
 # ===================================================================================
 # Naive Monte Carlo option pricer
 # ===================================================================================
-def call_naive_mc(S_0, K, T, r, sigma, num_paths):
-    """Estimates the European call price using Monte Carlo methods with *num_paths* paths."""
+def call_naive_mc(S_0, K, T, r, sigma, N):
+    """Estimates the European call price using Monte Carlo methods with *N* paths."""
     payoff_list = []
 
-    for _ in range(num_paths):
+    # Simulate N possible price paths, then calculate payoff for each path
+    for _ in range(N):
         Z = norm.samples(1)[0]
         S_T = S_0 * math.e ** ((r - sigma ** 2 / 2) * T + sigma * math.sqrt(T) * Z)
         payoff = max(S_T - K, 0)
 
         payoff_list.append(payoff)
 
+    # Find average of all price paths, then apply discount due to interest
     expected_payoff = sum(payoff_list) / len(payoff_list)
     C = math.e ** (-r * T) * expected_payoff
 
