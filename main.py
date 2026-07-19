@@ -61,7 +61,7 @@ def naive_mc_call(S0, K, T, r, sigma, N, rng: np.random):
 
 def control_var_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     """
-    Control variate Monte Carlo estimator. Uses S(T) as the control, since E(S(T)) =
+    Control variates estimator. Uses S(T) as the control, since E(S(T)) =
     S0 * exp(rT) is known exactly.
     """
     Z = rng.standard_normal(N)
@@ -70,7 +70,7 @@ def control_var_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     discounted_payoffs = np.exp((-r * T)) * payoffs
 
     control = ST
-    control_mean = S0 * np.exp(r * T)
+    control_mean = S0 * np.exp(r * T) # We know this analytically (see func docstr)
 
     # Finding optimal c value
     cov = np.cov(discounted_payoffs, control, ddof=1)[0, 1]
@@ -83,3 +83,28 @@ def control_var_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     C = np.mean(adjusted_payoffs)
     
     return C, adjusted_payoffs
+
+
+def antithetic_var_call(S0, K, T, r, sigma, N, rng: np.random):
+    """
+    Antithetic variates estimator. Draws N//2 samples of Z, pairs each with -Z,
+    and returns the N//2 paired (independent) discounted payoffs so variance
+    calculations in tests.py remain valid.
+    """
+    Z_half = rng.standard_normal(N // 2)
+
+    ST_pos = simulate_terminal_prices(S0, T, r, sigma, Z_half)
+    ST_neg = simulate_terminal_prices(S0, T, r, sigma, -Z_half)
+
+    payoffs_pos = np.maximum(ST_pos - K, 0)
+    payoffs_neg = np.maximum(ST_neg - K, 0)
+
+    discounted_pos = np.exp((-r * T)) * payoffs_pos
+    discounted_neg = np.exp((-r * T)) * payoffs_neg
+
+    paired_discounted_payoffs = 0.5 * (discounted_pos + discounted_neg)
+    C = np.mean(paired_discounted_payoffs)
+
+    # Only return payoff_pos since variance tests assume payoffs are independent,
+    # but payoff_pos and payoff_neg are not independent, so var test will be wrong
+    return C, paired_discounted_payoffs

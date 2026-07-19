@@ -3,7 +3,12 @@
 import numpy as np
 from tabulate import tabulate
 
-from main import black_scholes_call, naive_mc_call, control_var_mc_call
+from main import (
+    black_scholes_call,
+    naive_mc_call,
+    control_var_mc_call,
+    antithetic_var_call
+)
 
 
 S0    = 100  # Current price of underlying asset in GBP
@@ -29,7 +34,7 @@ def benchmark_single_method_variance(N, method, n_reps=30, base_seed=123):
     for i in range(n_reps):
         rng_method = np.random.default_rng(seed=base_seed + i)
         _, payoffs = method(S0, K, T, r, sigma, N, rng_method)
-        variances.append(np.var(payoffs, ddof = 1) / N)
+        variances.append(np.var(payoffs, ddof = 1) / len(payoffs))
     
     mean_var = np.mean(variances)
     se_var = np.std(variances, ddof=1) / np.sqrt(n_reps)
@@ -49,7 +54,7 @@ def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
     for i in range(n_reps):
         rng_method = np.random.default_rng(seed=base_seed + i)
         C, payoffs = method(S0, K, T, r, sigma, N, rng_method)
-        se = np.std(payoffs) / np.sqrt(N)
+        se = np.std(payoffs) / np.sqrt(len(payoffs))
 
         prices.append(C)
         errors.append(abs(C - TRUE_PRICE))
@@ -67,7 +72,7 @@ def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
 # ===================================================================================
 def benchmark_variance(N=1000, n_reps=30):
     """Benchmarks the variance of every method's estimator for the call price."""
-    methods = [naive_mc_call, control_var_mc_call]
+    methods = [naive_mc_call, control_var_mc_call, antithetic_var_call]
     headers = ["Method", "Mean variance", "Std. error"]
     rows = []
 
@@ -86,7 +91,7 @@ def benchmark_error(N=1000, n_reps=30):
     Benchmarks the error of every method's estimator for the call price.
     Compares estimated value to true value, derived from Black-Scholes formula.
     """
-    methods = [naive_mc_call, control_var_mc_call]
+    methods = [naive_mc_call, control_var_mc_call, antithetic_var_call]
     headers = ["Method", "Mean error", "Std. error", "Mean price"]
     rows = []
 
