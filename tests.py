@@ -68,8 +68,8 @@ def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
 def benchmark_variance(N=1000, n_reps=30):
     """Benchmarks the variance of every method's estimator for the call price."""
     methods = [naive_mc_call, control_var_mc_call]
-    rows = []
     headers = ["Method", "Mean variance", "Std. error"]
+    rows = []
 
     for method in methods:
         mean_var, se_var = benchmark_single_method_variance(N, method, n_reps)
@@ -87,8 +87,8 @@ def benchmark_error(N=1000, n_reps=30):
     Compares estimated value to true value, derived from Black-Scholes formula.
     """
     methods = [naive_mc_call, control_var_mc_call]
-    rows = []
     headers = ["Method", "Mean error", "Std. error", "Mean price"]
+    rows = []
 
     for method in methods:
         mean_price, mean_error, se_error = benchmark_single_method_error(N, method)

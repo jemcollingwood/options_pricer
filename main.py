@@ -4,12 +4,6 @@ from scipy.stats import norm
 
 rng = np.random.default_rng(seed=42)
 
-S0    = 100  # Current price of underlying asset in GBP
-K     = 100  # Strike price of the contract in GBP
-T     = 1    # Time to maturity in years
-r     = 0.05 # Risk free interest rate
-sigma = 0.2  # Volatility of underlying asset
-
 
 # ===================================================================================
 # Helper functions
@@ -36,7 +30,7 @@ def simulate_terminal_prices(S0, T, r, sigma, Z):
 # ===================================================================================
 def black_scholes_call(S0, K, T, r, sigma):
     """Calculates the European call price using the Black-Scholes formula."""
-    d_1 = (np.log(S0 / K) + (r + sigma ** 2 / 2)) / (sigma * np.sqrt(T))
+    d_1 = (np.log(S0 / K) + (r + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
     d_2 = d_1 - sigma * np.sqrt(T)
     C = S0 * norm.cdf(d_1) - K * np.exp((-r * T)) * norm.cdf(d_2)
 
@@ -45,7 +39,7 @@ def black_scholes_call(S0, K, T, r, sigma):
 
 def black_scholes_put(S0, K, T, r, sigma):
     """Calculates the European put price using the Black-Scholes formula."""
-    C = black_scholes_put(S0, K, T, r, sigma)
+    C = black_scholes_call(S0, K, T, r, sigma)
     P = calculate_put_price(S0, K, T, r, C)
 
     return P
