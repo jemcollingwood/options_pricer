@@ -1,5 +1,6 @@
 """tests.py - Tests and benchmarks for Monte Carlo estimators"""
 
+import matplotlib.pyplot as plt
 import numpy as np
 from tabulate import tabulate
 
@@ -18,6 +19,12 @@ r     = 0.05 # Risk free interest rate
 sigma = 0.2  # Volatility of underlying asset
 
 TRUE_PRICE = black_scholes_call(S0, K, T, r, sigma)
+
+# List of methods to be benchmarked
+methods = [naive_mc_call, control_var_mc_call, antithetic_var_call]
+
+# Used in convergence benchmarks, list of the various N's tested
+Ns = [10, 100, 1000, 10000, 100000]
 
 
 # ===================================================================================
@@ -67,12 +74,24 @@ def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
     return mean_price, mean_error, se_error
 
 
+def benchmark_single_convergence(method, Ns, n_reps=30, base_seed=123):
+    """
+    Returns a list containing the mean error of a method (over 30 reps) for each N.
+    """
+    errors = []
+
+    for N in Ns:
+        _, mean_error, _ = benchmark_single_method_error(N, method, n_reps, base_seed)
+        errors.append(mean_error)
+
+    return errors
+
+
 # ===================================================================================
 # Benchmark summaries
 # ===================================================================================
-def benchmark_variance(N=1000, n_reps=30):
+def benchmark_variance(methods, N=1000, n_reps=30):
     """Benchmarks the variance of every method's estimator for the call price."""
-    methods = [naive_mc_call, control_var_mc_call, antithetic_var_call]
     headers = ["Method", "Mean variance", "Std. error"]
     rows = []
 
@@ -86,12 +105,11 @@ def benchmark_variance(N=1000, n_reps=30):
     print("=" * 61)
 
 
-def benchmark_error(N=1000, n_reps=30):
+def benchmark_error(methods, N=1000, n_reps=30):
     """
     Benchmarks the error of every method's estimator for the call price.
     Compares estimated value to true value, derived from Black-Scholes formula.
     """
-    methods = [naive_mc_call, control_var_mc_call, antithetic_var_call]
     headers = ["Method", "Mean error", "Std. error", "Mean price"]
     rows = []
 
@@ -106,7 +124,30 @@ def benchmark_error(N=1000, n_reps=30):
     print("=" * 61)
 
 
+def benchmark_convergence(methods, Ns, n_reps=30):
+    """
+    Benchmarks the convergence rate (error vs number of paths simulated N) of each
+    method and plots them together on a loglog graph for comparison.
+    """
+    fig, ax = plt.subplots()
+
+    for method in methods:
+        errors = benchmark_single_convergence(method, Ns, n_reps)
+        ax.plot(Ns, errors, label=method.__name__)
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.legend()
+
+    ax.set_xlabel("Number of paths simulated per rep N")
+    ax.set_ylabel(f"Mean error over {n_reps} reps")
+    ax.set_title("Comparing convergence rates of Monte Carlo methods")
+
+    plt.show()
+    
+
 if __name__ == "__main__":
-    benchmark_error()
+    benchmark_error(methods)
     print()
-    benchmark_variance()
+    benchmark_variance(methods)
+    benchmark_convergence(methods, Ns)
