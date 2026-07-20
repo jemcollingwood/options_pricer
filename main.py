@@ -67,7 +67,7 @@ def naive_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     discounted = np.exp((-r * T)) * payoffs
     C = np.mean(discounted)
 
-    return C, payoffs
+    return C, discounted
 
 
 def control_var_call(S0, K, T, r, sigma, N, rng: np.random):
@@ -133,7 +133,7 @@ def strat_sample_call(S0, K, T, r, sigma, N, rng: np.random):
     discounted = np.exp((-r * T)) * payoffs
     C = np.mean(discounted)
 
-    return C, payoffs
+    return C, discounted
 
 
 def imp_sample_call(S0, K, T, r, sigma, N, rng: np.random):
@@ -153,5 +153,5 @@ def imp_sample_call(S0, K, T, r, sigma, N, rng: np.random):
     discounted = np.exp((-r * T)) * payoffs * likelihood_ratio
     C = np.mean(discounted)
 
-    return C, payoffs
+    return C, discounted
 
