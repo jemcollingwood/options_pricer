@@ -20,7 +20,7 @@ def simulate_terminal_prices(S0, T, r, sigma, Z):
     Simulates terminal asset prices S(T) using Geometric Brownian Motion, given
     a numpy array of standard normal draws Z. Vectorised over Z.
     """
-    ST = S0 * np.e ** ((r - 0.5 * sigma ** 2) * T + sigma * np.sqrt(T) * Z)
+    ST = S0 * np.e**((r - 0.5 * sigma**2) * T + sigma * np.sqrt(T) * Z)
 
     return ST
 
@@ -41,7 +41,7 @@ def stratified_normal(N, rng: np.random):
 # ===================================================================================
 def black_scholes_call(S0, K, T, r, sigma):
     """Calculates the European call price using the Black-Scholes formula."""
-    d_1 = (np.log(S0 / K) + (r + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+    d_1 = (np.log(S0 / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
     d_2 = d_1 - sigma * np.sqrt(T)
     C = S0 * norm.cdf(d_1) - K * np.exp((-r * T)) * norm.cdf(d_2)
 
@@ -70,7 +70,7 @@ def naive_mc_call(S0, K, T, r, sigma, N, rng: np.random):
     return C, payoffs
 
 
-def control_var_mc_call(S0, K, T, r, sigma, N, rng: np.random):
+def control_var_call(S0, K, T, r, sigma, N, rng: np.random):
     """
     Control variates estimator. Uses S(T) as the control, since E(S(T)) =
     S0 * exp(rT) is known exactly.
@@ -134,3 +134,24 @@ def strat_sample_call(S0, K, T, r, sigma, N, rng: np.random):
     C = np.mean(discounted)
 
     return C, payoffs
+
+
+def imp_sample_call(S0, K, T, r, sigma, N, rng: np.random):
+    """
+    Importance sampling estimator. Draws Z from a N(mu, 1), distribution rather
+    than a standard distribution. Therefore less paths are "wasted" by being less than
+    the strike price. The payoffs then need to be reweighted by the likelihood ratio to 
+    adjust for this.
+    """
+    mu = (np.log(K / S0) - (r - 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
+
+    Z = rng.standard_normal(N) + mu
+    ST = simulate_terminal_prices(S0, T, r, sigma, Z)
+    payoffs = np.maximum(ST - K, 0)
+
+    likelihood_ratio = np.exp(-mu * Z + 0.5 * mu**2) # phi(Z)/g(Z)
+    discounted = np.exp((-r * T)) * payoffs * likelihood_ratio
+    C = np.mean(discounted)
+
+    return C, payoffs
+

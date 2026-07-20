@@ -7,14 +7,14 @@ from tabulate import tabulate
 from main import (
     black_scholes_call,
     naive_mc_call,
-    control_var_mc_call,
+    control_var_call,
     antithetic_var_call,
-    strat_sample_call
+    strat_sample_call,
+    imp_sample_call
 )
 
-
 S0    = 100  # Current price of underlying asset in GBP
-K     = 100  # Strike price of the contract in GBP
+K     = 120  # Strike price of the contract in GBP
 T     = 1    # Time to maturity in years
 r     = 0.05 # Risk free interest rate
 sigma = 0.2  # Volatility of underlying asset
@@ -22,7 +22,13 @@ sigma = 0.2  # Volatility of underlying asset
 TRUE_PRICE = black_scholes_call(S0, K, T, r, sigma)
 
 # List of methods to be benchmarked
-methods = [naive_mc_call, antithetic_var_call, control_var_mc_call, strat_sample_call]
+methods = [
+    naive_mc_call,
+    antithetic_var_call,
+    control_var_call,
+    strat_sample_call,
+    imp_sample_call
+]
 
 # Used in convergence benchmarks, list of the various N's tested
 Ns = [10, 100, 1000, 10000, 100000]
