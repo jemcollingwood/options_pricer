@@ -25,6 +25,17 @@ def simulate_terminal_prices(S0, T, r, sigma, Z):
     return ST
 
 
+def stratified_normal(N, rng: np.random):
+    """
+    Returns N draws from a normal distribution, with one draw guaranteed per equal
+    probability stratum.
+    """
+    i = np.arange(N)
+    U = (i + rng.random(N)) / N
+
+    return norm.ppf(U)
+
+
 # ===================================================================================
 # Black-Scholes formula
 # ===================================================================================
@@ -108,3 +119,18 @@ def antithetic_var_call(S0, K, T, r, sigma, N, rng: np.random):
     # Only return payoff_pos since variance tests assume payoffs are independent,
     # but payoff_pos and payoff_neg are not independent, so var test will be wrong
     return C, paired_discounted_payoffs
+
+
+def strat_sample_call(S0, K, T, r, sigma, N, rng: np.random):
+    """
+    Stratified sampling estimator. Partitions (0,1) into N strata, and draws
+    one random sample from each strata to get an array U. Then sets
+    Z = inv_cdf_standard_normal(U). Avoids Z having clusters due to chance.
+    """
+    Z = stratified_normal(N, rng)
+    ST = simulate_terminal_prices(S0, T, r, sigma, Z)
+    payoffs = np.maximum(ST - K, 0)
+    discounted = np.exp((-r * T)) * payoffs
+    C = np.mean(discounted)
+
+    return C, payoffs

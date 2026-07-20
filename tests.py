@@ -8,7 +8,8 @@ from main import (
     black_scholes_call,
     naive_mc_call,
     control_var_mc_call,
-    antithetic_var_call
+    antithetic_var_call,
+    strat_sample_call
 )
 
 
@@ -21,7 +22,7 @@ sigma = 0.2  # Volatility of underlying asset
 TRUE_PRICE = black_scholes_call(S0, K, T, r, sigma)
 
 # List of methods to be benchmarked
-methods = [naive_mc_call, control_var_mc_call, antithetic_var_call]
+methods = [naive_mc_call, antithetic_var_call, control_var_mc_call, strat_sample_call]
 
 # Used in convergence benchmarks, list of the various N's tested
 Ns = [10, 100, 1000, 10000, 100000]
