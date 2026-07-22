@@ -5,14 +5,14 @@ from scipy.stats import norm
 # ===================================================================================
 # Helper functions
 # ===================================================================================
-def calculate_put_price(S0, K, T, r, C):
+def calculate_put_price(S0: float, K: float, T: float, r: float, C: float):
     """Calculates the put price P of an option given it has call price C."""
     P = C - S0 + K * np.exp((-r * T))
 
     return P
 
 
-def simulate_terminal_prices(S0, T, r, sigma, Z):
+def simulate_terminal_prices(S0: float, T: float, r: float, sigma, Z: np.array):
     """
     Simulates terminal asset prices S(T) using Geometric Brownian Motion, given
     a numpy array of standard normal draws Z. Vectorised over Z.
@@ -22,7 +22,7 @@ def simulate_terminal_prices(S0, T, r, sigma, Z):
     return ST
 
 
-def stratified_normal(N, rng: np.random.Generator):
+def stratified_normal(N: int, rng: np.random.Generator):
     """
     Returns N draws from a normal distribution, with one draw guaranteed per equal
     probability stratum.
@@ -36,7 +36,7 @@ def stratified_normal(N, rng: np.random.Generator):
 # ===================================================================================
 # Black-Scholes formula
 # ===================================================================================
-def black_scholes_call(S0, K, T, r, sigma):
+def black_scholes_call(S0: float, K: float, T: float, r: float, sigma: float):
     """Calculates the European call price using the Black-Scholes formula."""
     d_1 = (np.log(S0 / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
     d_2 = d_1 - sigma * np.sqrt(T)
@@ -45,7 +45,7 @@ def black_scholes_call(S0, K, T, r, sigma):
     return C
 
 
-def black_scholes_put(S0, K, T, r, sigma):
+def black_scholes_put(S0: float, K: float, T: float, r: float, sigma: float):
     """Calculates the European put price using the Black-Scholes formula."""
     C = black_scholes_call(S0, K, T, r, sigma)
     P = calculate_put_price(S0, K, T, r, C)
@@ -56,7 +56,7 @@ def black_scholes_put(S0, K, T, r, sigma):
 # ===================================================================================
 # Monte Carlo option pricers
 # ===================================================================================
-def naive_mc_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
+def naive_mc_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator):
     """Estimates the European call price using Monte Carlo methods with *N* paths."""
     Z = rng.standard_normal(N)
     ST = simulate_terminal_prices(S0, T, r, sigma, Z)
@@ -67,7 +67,7 @@ def naive_mc_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
     return C, discounted
 
 
-def control_var_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
+def control_var_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator):
     """
     Control variates estimator. Uses S(T) as the control, since E(S(T)) =
     S0 * exp(rT) is known exactly.
@@ -93,7 +93,7 @@ def control_var_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
     return C, adjusted_payoffs
 
 
-def antithetic_var_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
+def antithetic_var_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator):
     """
     Antithetic variates estimator. Draws N//2 samples of Z, pairs each with -Z,
     and returns the N//2 paired (independent) discounted payoffs so variance
@@ -119,7 +119,7 @@ def antithetic_var_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
     return C, paired_discounted_payoffs
 
 
-def strat_sample_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
+def strat_sample_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator):
     """
     Stratified sampling estimator. Partitions (0,1) into N strata, and draws
     one random sample from each strata to get an array U. Then sets
@@ -134,7 +134,7 @@ def strat_sample_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
     return C, discounted
 
 
-def imp_sample_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
+def imp_sample_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator):
     """
     Importance sampling estimator. Draws Z from a N(mu, 1), distribution rather
     than a standard distribution. Therefore less paths are "wasted" by being less than

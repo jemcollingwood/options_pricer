@@ -39,7 +39,7 @@ Ns = [10, 100, 1000, 10000, 100000]
 # ===================================================================================
 # Single method benchmarks
 # ===================================================================================
-def benchmark_single_method_variance(N, method, n_reps=30, base_seed=123):
+def benchmark_single_method_variance(N: int, method: function, n_reps: int=30, base_seed: int=123):
     """
     Benchmarks the variance of a single method's estimator for the call price.
     
@@ -58,7 +58,7 @@ def benchmark_single_method_variance(N, method, n_reps=30, base_seed=123):
     return mean_var, se_mean_price
 
 
-def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
+def benchmark_single_method_error(N: int, method: function, n_reps: int=30, base_seed: int=123):
     """
     Benchmarks the error of a single method's estimator for the call price.
     Compares estimated value to true value, derived from Black-Scholes formula.
@@ -84,7 +84,7 @@ def benchmark_single_method_error(N, method, n_reps=30, base_seed=123):
     return mean_price, mean_error, se_error, mean_se_theoretical
 
 
-def benchmark_single_convergence(method, Ns, n_reps=30, base_seed=123):
+def benchmark_single_convergence(method: function, Ns: list[int], n_reps: int=30, base_seed: int=123):
     """
     Returns a list containing the mean error of a method (over 30 reps) for each N.
     """
@@ -97,7 +97,7 @@ def benchmark_single_convergence(method, Ns, n_reps=30, base_seed=123):
     return errors
 
 
-def benchmark_single_efficiency(N, method, n_reps=30, base_seed=123):
+def benchmark_single_efficiency(N: int, method: function, n_reps: int=30, base_seed: int=123):
     """
     Benchmarks the efficiency of a single method i.e. mean variance * mean time.
     """
@@ -107,7 +107,7 @@ def benchmark_single_efficiency(N, method, n_reps=30, base_seed=123):
     return mean_var * mean_time
 
 
-def benchmark_mean_time(N, method, n_reps, base_seed=123):
+def benchmark_mean_time(N: int, method: function, n_reps: int=30, base_seed: int=123):
     """
     Returns the mean time of a method to estimate an option price with *N* paths.
     """
@@ -125,7 +125,7 @@ def benchmark_mean_time(N, method, n_reps, base_seed=123):
 # ===================================================================================
 # Benchmark summaries
 # ===================================================================================
-def benchmark_variance(methods, N=1000, n_reps=30):
+def benchmark_variance(methods: list[function], N: int=1000, n_reps: int=30):
     """Benchmarks the variance of every method's estimator for the call price."""
     headers = ["Method", "Mean variance"]
     rows = []
@@ -139,7 +139,7 @@ def benchmark_variance(methods, N=1000, n_reps=30):
     print(tabulate(rows, headers, tablefmt="simple"))
 
 
-def benchmark_error(methods, N=1000, n_reps=30):
+def benchmark_error(methods: list[function], N: int=1000, n_reps: int=30):
     """
     Benchmarks the error of every method's estimator for the call price.
     Compares estimated value to true value, derived from Black-Scholes formula.
@@ -168,7 +168,7 @@ def benchmark_error(methods, N=1000, n_reps=30):
     print(tabulate(rows, headers, tablefmt="simple"))
 
 
-def benchmark_convergence(methods, Ns, n_reps=30):
+def benchmark_convergence(methods: list[function], Ns: list[int], n_reps: int=30):
     """
     Benchmarks the convergence rate (error vs number of paths simulated N) of each
     method and plots them together on a loglog graph for comparison.
@@ -191,7 +191,7 @@ def benchmark_convergence(methods, Ns, n_reps=30):
     plt.show()
 
 
-def benchmark_efficiency(methods, N=1000, n_reps=30):
+def benchmark_efficiency(methods: list[function], N: int=1000, n_reps: int=30):
     """
     Benchmarks the efficiency (mean_var * mean_time) of each method. Compares relative
     to naive Monte Carlo.
@@ -221,7 +221,7 @@ def benchmark_efficiency(methods, N=1000, n_reps=30):
     print(tabulate(rows, headers, tablefmt="simple"))
 
 
-def compare_theoretical_vs_empirical_se(methods, N=1000, n_reps=300):
+def compare_theoretical_vs_empirical_se(methods: list[function], N: int=1000, n_reps: int=300):
     """
     Compares the theoretical vs empirical std. error for each method. 
     """
