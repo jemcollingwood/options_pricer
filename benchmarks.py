@@ -146,7 +146,7 @@ def benchmark_variance(
 
     for method in methods:
         mean_var, _ = benchmark_single_method_variance(N, method, n_reps)
-        rows.append([method.__name__, f"{mean_var:.5f}"])
+        rows.append([method.__name__, f"{mean_var:.4f}"])
 
     print(f"=== VARIANCE (mean over {n_reps} reps) ===")
     print(tabulate(rows, headers, tablefmt="simple"))
@@ -170,9 +170,9 @@ def benchmark_error(
         rows.append(
             [
                 method.__name__,
-                f"{mean_price:.5f}",
-                f"{mean_error:.5f}",
-                f"{se_error:.5f}",
+                f"{mean_price:.4f}",
+                f"{mean_error:.4f}",
+                f"{se_error:.4f}",
             ]
         )
 
@@ -201,7 +201,7 @@ def benchmark_convergence(
     ax.set_ylabel(f"Mean error over {n_reps} reps")
     ax.set_title("Comparing convergence rates of Monte Carlo methods")
 
-    fig.savefig("results/convergence.png", dpi=150, bbox_inches="tight")
+    fig.savefig("convergence.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
@@ -227,8 +227,8 @@ def benchmark_efficiency(
         rows.append(
             [
                 method.__name__,
-                f"{mean_var:.5f}",
-                f"{mean_time:.5f}",
+                f"{mean_var:.4f}",
+                f"{mean_time:.7f}",
                 f"{naive_eff / efficiency:.2f}",  # >1 means more efficient than naive
             ]
         )
@@ -260,8 +260,8 @@ def compare_theoretical_vs_empirical_se(
         rows.append(
             [
                 method.__name__,
-                f"{mean_se_theoretical:.5f}",
-                f"{empirical_se:.5f}",
+                f"{mean_se_theoretical:.4f}",
+                f"{empirical_se:.4f}",
                 f"{ratio:.2f}",
             ]
         )
