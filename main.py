@@ -12,12 +12,14 @@ def calculate_put_price(S0: float, K: float, T: float, r: float, C: float) -> fl
     return P
 
 
-def simulate_terminal_prices(S0: float, T: float, r: float, sigma, Z: np.array) -> float:
+def simulate_terminal_prices(
+    S0: float, T: float, r: float, sigma, Z: np.array
+) -> float:
     """
     Simulates terminal asset prices S(T) using Geometric Brownian Motion, given
     a numpy array of standard normal draws Z. Vectorised over Z.
     """
-    ST = S0 * np.e**((r - 0.5 * sigma**2) * T + sigma * np.sqrt(T) * Z)
+    ST = S0 * np.e ** ((r - 0.5 * sigma**2) * T + sigma * np.sqrt(T) * Z)
 
     return ST
 
@@ -56,7 +58,15 @@ def black_scholes_put(S0: float, K: float, T: float, r: float, sigma: float) -> 
 # ===================================================================================
 # Monte Carlo option pricers
 # ===================================================================================
-def naive_mc_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator) -> tuple[float, np.array]:
+def naive_mc_call(
+    S0: float,
+    K: float,
+    T: float,
+    r: float,
+    sigma: float,
+    N: int,
+    rng: np.random.Generator,
+) -> tuple[float, np.array]:
     """Estimates the European call price using Monte Carlo methods with *N* paths."""
     Z = rng.standard_normal(N)
     ST = simulate_terminal_prices(S0, T, r, sigma, Z)
@@ -67,7 +77,15 @@ def naive_mc_call(S0: float, K: float, T: float, r: float, sigma: float, N: int,
     return C, discounted
 
 
-def control_var_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator) -> tuple[float, np.array]:
+def control_var_call(
+    S0: float,
+    K: float,
+    T: float,
+    r: float,
+    sigma: float,
+    N: int,
+    rng: np.random.Generator,
+) -> tuple[float, np.array]:
     """
     Control variates estimator. Uses S(T) as the control, since E(S(T)) =
     S0 * exp(rT) is known exactly.
@@ -78,7 +96,7 @@ def control_var_call(S0: float, K: float, T: float, r: float, sigma: float, N: i
     discounted_payoffs = np.exp((-r * T)) * payoffs
 
     control = ST
-    control_mean = S0 * np.exp(r * T) # We know this analytically (see func docstr)
+    control_mean = S0 * np.exp(r * T)  # We know this analytically (see func docstr)
 
     # Finding optimal c value
     cov = np.cov(discounted_payoffs, control, ddof=1)[0, 1]
@@ -89,11 +107,19 @@ def control_var_call(S0: float, K: float, T: float, r: float, sigma: float, N: i
     adjusted_payoffs = discounted_payoffs - c * (control - control_mean)
 
     C = np.mean(adjusted_payoffs)
-    
+
     return C, adjusted_payoffs
 
 
-def antithetic_var_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator) -> tuple[float, np.array]:
+def antithetic_var_call(
+    S0: float,
+    K: float,
+    T: float,
+    r: float,
+    sigma: float,
+    N: int,
+    rng: np.random.Generator,
+) -> tuple[float, np.array]:
     """
     Antithetic variates estimator. Draws N//2 samples of Z, pairs each with -Z,
     and returns the N//2 paired (independent) discounted payoffs so variance
@@ -119,7 +145,15 @@ def antithetic_var_call(S0: float, K: float, T: float, r: float, sigma: float, N
     return C, paired_discounted_payoffs
 
 
-def strat_sample_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator) -> tuple[float, np.array]:
+def strat_sample_call(
+    S0: float,
+    K: float,
+    T: float,
+    r: float,
+    sigma: float,
+    N: int,
+    rng: np.random.Generator,
+) -> tuple[float, np.array]:
     """
     Stratified sampling estimator. Partitions (0,1) into N strata, and draws
     one random sample from each strata to get an array U. Then sets
@@ -134,11 +168,19 @@ def strat_sample_call(S0: float, K: float, T: float, r: float, sigma: float, N: 
     return C, discounted
 
 
-def imp_sample_call(S0: float, K: float, T: float, r: float, sigma: float, N: int, rng: np.random.Generator) -> tuple[float, np.array]:
+def imp_sample_call(
+    S0: float,
+    K: float,
+    T: float,
+    r: float,
+    sigma: float,
+    N: int,
+    rng: np.random.Generator,
+) -> tuple[float, np.array]:
     """
     Importance sampling estimator. Draws Z from a N(mu, 1), distribution rather
     than a standard distribution. Therefore less paths are "wasted" by being less than
-    the strike price. The payoffs then need to be reweighted by the likelihood ratio to 
+    the strike price. The payoffs then need to be reweighted by the likelihood ratio to
     adjust for this.
     """
     mu = (np.log(K / S0) - (r - 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
@@ -147,9 +189,8 @@ def imp_sample_call(S0: float, K: float, T: float, r: float, sigma: float, N: in
     ST = simulate_terminal_prices(S0, T, r, sigma, Z)
     payoffs = np.maximum(ST - K, 0)
 
-    likelihood_ratio = np.exp(-mu * Z + 0.5 * mu**2) # phi(Z)/g(Z)
+    likelihood_ratio = np.exp(-mu * Z + 0.5 * mu**2)  # phi(Z)/g(Z)
     discounted = np.exp((-r * T)) * payoffs * likelihood_ratio
     C = np.mean(discounted)
 
     return C, discounted
-
