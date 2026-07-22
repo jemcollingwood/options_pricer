@@ -75,10 +75,7 @@ Note that the runtimes are so short that there are small variations, e.g. Naive 
 
 For this out-of-the-money strike, stratified sampling dominates by a wide margin. It removes uneven coverage of the sample space - a variance contribution that all other methods leave untouched. Antithetic and control variates give modest, near free improvements at essentially the same runtime as naive Monto Carlo. Their small runtime overhead is not worth it in this case, since the variance reduction they achieve is also modest, so the net efficiency comes out close to naive.
 
-**Stratified sampling only works this well because the problem is one-dimensiona.** A European call under GBM depends on a single terminal draw $Z$, so stratifying that one dimension gives complete coverage of the distribution with $N$ strata and $N$ paths, at essentially no extra cost. However, this does not generalise to path dependent options which require many correlated draws per simulated path, or to multi-asset payoffs. Stratifying $d$ dimensions while preserving the same coverage guarantee requires on the order of $N^d$ strata, so the approach becomes impractical quickly as dimension grows. This is an example of the curse of dimensionality.
-
-**A note on standard errors.**
-NEED TO ADD
+**Stratified sampling only works this well because the problem is one-dimensional.** A European call under GBM depends on a single terminal draw $Z$, so stratifying that one dimension gives complete coverage of the distribution with $N$ strata and $N$ paths, at essentially no extra cost. However, this does not generalise to path dependent options which require many correlated draws per simulated path, or to multi-asset payoffs. Stratifying $d$ dimensions while preserving the same coverage guarantee requires on the order of $N^d$ strata, so the approach becomes impractical quickly as dimension grows. This is an example of the curse of dimensionality.
 
 
 **Convergence**
