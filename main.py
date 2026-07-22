@@ -2,9 +2,6 @@ import numpy as np
 from scipy.stats import norm
 
 
-rng = np.random.default_rng(seed=42)
-
-
 # ===================================================================================
 # Helper functions
 # ===================================================================================
@@ -25,7 +22,7 @@ def simulate_terminal_prices(S0, T, r, sigma, Z):
     return ST
 
 
-def stratified_normal(N, rng: np.random):
+def stratified_normal(N, rng: np.random.Generator):
     """
     Returns N draws from a normal distribution, with one draw guaranteed per equal
     probability stratum.
@@ -116,8 +113,9 @@ def antithetic_var_call(S0, K, T, r, sigma, N, rng: np.random.Generator):
     paired_discounted_payoffs = 0.5 * (discounted_pos + discounted_neg)
     C = np.mean(paired_discounted_payoffs)
 
-    # Only return payoff_pos since variance tests assume payoffs are independent,
-    # but payoff_pos and payoff_neg are not independent, so var test will be wrong
+    # Return the paired (averaged) payoffs — each pair is independent across reps,
+    # so downstream variance estimates remain valid, even though the two legs
+    # of a pair are negatively correlated by construction.
     return C, paired_discounted_payoffs
 
 

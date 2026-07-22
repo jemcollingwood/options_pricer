@@ -1,4 +1,4 @@
-"""tests.py - Tests and benchmarks for Monte Carlo estimators"""
+"""benchmarks.py - Benchmarks for Monte Carlo estimators."""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -127,7 +127,7 @@ def benchmark_mean_time(N, method, n_reps, base_seed=123):
 # ===================================================================================
 def benchmark_variance(methods, N=1000, n_reps=30):
     """Benchmarks the variance of every method's estimator for the call price."""
-    headers = ["Method", "Mean variance", "Std. error of mean price"]
+    headers = ["Method", "Mean variance"]
     rows = []
 
     for method in methods:
@@ -187,6 +187,7 @@ def benchmark_convergence(methods, Ns, n_reps=30):
     ax.set_ylabel(f"Mean error over {n_reps} reps")
     ax.set_title("Comparing convergence rates of Monte Carlo methods")
 
+    fig.savefig("results/convergence.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
@@ -248,11 +249,8 @@ def compare_theoretical_vs_empirical_se(methods, N=1000, n_reps=300):
 
 if __name__ == "__main__":
     benchmark_error(methods, n_reps=300)
-    print()
     benchmark_variance(methods, n_reps=300)
-    print()
     compare_theoretical_vs_empirical_se(methods)
-    print()
     benchmark_efficiency(methods, n_reps=300)
 
     benchmark_convergence(methods, Ns, n_reps=300)
