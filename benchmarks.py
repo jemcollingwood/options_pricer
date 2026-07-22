@@ -40,7 +40,7 @@ Ns = [10, 100, 1000, 10000, 100000]
 # Single method benchmarks
 # ===================================================================================
 def benchmark_single_method_variance(
-    N: int, method: function, n_reps: int = 30, base_seed: int = 123
+    N: int, method: function, n_reps: int = 300, base_seed: int = 123
 ) -> tuple[float, float]:
     """
     Benchmarks the variance of a single method's estimator for the call price.
@@ -61,7 +61,7 @@ def benchmark_single_method_variance(
 
 
 def benchmark_single_method_error(
-    N: int, method: function, n_reps: int = 30, base_seed: int = 123
+    N: int, method: function, n_reps: int = 300, base_seed: int = 123
 ) -> tuple[float, float, float, float]:
     """
     Benchmarks the error of a single method's estimator for the call price.
@@ -89,7 +89,7 @@ def benchmark_single_method_error(
 
 
 def benchmark_single_convergence(
-    method: function, Ns: list[int], n_reps: int = 30, base_seed: int = 123
+    method: function, Ns: list[int], n_reps: int = 300, base_seed: int = 123
 ) -> list[float]:
     """
     Returns a list containing the mean error of a method (over 30 reps) for each N.
@@ -106,7 +106,7 @@ def benchmark_single_convergence(
 
 
 def benchmark_single_efficiency(
-    N: int, method: function, n_reps: int = 30, base_seed: int = 123
+    N: int, method: function, n_reps: int = 300, base_seed: int = 123
 ) -> float:
     """
     Benchmarks the efficiency of a single method i.e. mean variance * mean time.
@@ -118,7 +118,7 @@ def benchmark_single_efficiency(
 
 
 def benchmark_mean_time(
-    N: int, method: function, n_reps: int = 30, base_seed: int = 123
+    N: int, method: function, n_reps: int = 300, base_seed: int = 123
 ) -> float:
     """
     Returns the mean time of a method to estimate an option price with *N* paths.
@@ -138,7 +138,7 @@ def benchmark_mean_time(
 # Benchmark summaries
 # ===================================================================================
 def benchmark_variance(
-    methods: list[function], N: int = 1000, n_reps: int = 30
+    methods: list[function], N: int = 1000, n_reps: int = 300
 ) -> None:
     """Benchmarks the variance of every method's estimator for the call price."""
     headers = ["Method", "Mean variance"]
@@ -152,7 +152,9 @@ def benchmark_variance(
     print(tabulate(rows, headers, tablefmt="simple"))
 
 
-def benchmark_error(methods: list[function], N: int = 1000, n_reps: int = 30) -> None:
+def benchmark_error(
+        methods: list[function], N: int = 1000, n_reps: int = 300
+) -> None:
     """
     Benchmarks the error of every method's estimator for the call price.
     Compares estimated value to true value, derived from Black-Scholes formula.
@@ -179,7 +181,7 @@ def benchmark_error(methods: list[function], N: int = 1000, n_reps: int = 30) ->
 
 
 def benchmark_convergence(
-    methods: list[function], Ns: list[int], n_reps: int = 30
+    methods: list[function], Ns: list[int], n_reps: int = 300
 ) -> None:
     """
     Benchmarks the convergence rate (error vs number of paths simulated N) of each
@@ -204,7 +206,7 @@ def benchmark_convergence(
 
 
 def benchmark_efficiency(
-    methods: list[function], N: int = 1000, n_reps: int = 30
+    methods: list[function], N: int = 1000, n_reps: int = 300
 ) -> None:
     """
     Benchmarks the efficiency (mean_var * mean_time) of each method. Compares relative

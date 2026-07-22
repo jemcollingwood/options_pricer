@@ -1,3 +1,5 @@
+"""main.py - Black-Scholes formula and the five Monte Carlo estimators."""
+
 import numpy as np
 from scipy.stats import norm
 
