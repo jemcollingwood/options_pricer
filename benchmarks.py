@@ -109,12 +109,12 @@ def benchmark_single_efficiency(
     N: int, method: function, n_reps: int = 300, base_seed: int = 123
 ) -> float:
     """
-    Benchmarks the efficiency of a single method i.e. mean variance * mean time.
+    Benchmarks the efficiency of a single method i.e. 1 / (mean variance * mean time).
     """
     mean_time = benchmark_mean_time(N, method, n_reps, base_seed)
     mean_var, _ = benchmark_single_method_variance(N, method, n_reps, base_seed)
 
-    return mean_var * mean_time
+    return 1 / (mean_var * mean_time)
 
 
 def benchmark_mean_time(
@@ -209,7 +209,7 @@ def benchmark_efficiency(
     methods: list[function], N: int = 1000, n_reps: int = 300
 ) -> None:
     """
-    Benchmarks the efficiency (mean_var * mean_time) of each method. Compares relative
+    Benchmarks the efficiency (1 / (mean_var * mean_time)) of each method. Compares relative
     to naive Monte Carlo.
     """
     headers = ["Method", "Mean variance", "Mean time (s)", "Efficiency (rel. to naive)"]
@@ -217,19 +217,19 @@ def benchmark_efficiency(
 
     naive_var, _ = benchmark_single_method_variance(N, naive_mc_call, n_reps)
     naive_time = benchmark_mean_time(N, naive_mc_call, n_reps)
-    naive_eff = naive_var * naive_time
+    naive_eff = 1 / (naive_var * naive_time)
 
     for method in methods:
         mean_var, _ = benchmark_single_method_variance(N, method, n_reps)
         mean_time = benchmark_mean_time(N, method, n_reps)
-        efficiency = mean_var * mean_time
+        efficiency = 1 / (mean_var * mean_time)
 
         rows.append(
             [
                 method.__name__,
                 f"{mean_var:.4f}",
                 f"{mean_time:.7f}",
-                f"{naive_eff / efficiency:.2f}",  # >1 means more efficient than naive
+                f"{efficiency / naive_eff:.2f}",  # >1 means more efficient than naive
             ]
         )
 

@@ -61,7 +61,7 @@ All figures below are averaged over 300 independent repetitions at $N = 1000$ pa
 | Stratified sampling | 3.2475 | 0.0078 | 0.0001 |
 | Importance sampling | 3.2506 | 0.0905 | 0.0132 |
 
-**Efficiency relative to naive (higher is better; efficiency = variance * runtime)**
+**Efficiency relative to naive (higher is better; efficiency = 1 / (variance * runtime))**
 
 | Method | Mean time | Efficiency (rel. to naive) |
 |---|---|---|
